@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,25 +14,39 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique
-  password String
-  role     Role     @default(TEAM)
-  tasks    Task[]   @relation("UserTasks")
-  createdAt DateTime @default(now())
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(TEAM)
+  tasks     Task[]     @relation("UserTasks")
+  logs      TaskLog[]  @relation("UserLogs") // 👈 Tambah relasi balik
+  createdAt DateTime   @default(now())
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  status      Status   @default(NOT_STARTED)
-  assignedTo  User?    @relation("UserTasks", fields: [assignedToId], references: [id])
+  id           Int        @id @default(autoincrement())
+  title        String
+  description  String?
+  status       Status     @default(NOT_STARTED)
+  assignedTo   User?      @relation("UserTasks", fields: [assignedToId], references: [id])
   assignedToId Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  logs         TaskLog[]  @relation("TaskLogs") // 👈 Tambah relasi balik
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
+
+model TaskLog {
+  id          Int       @id @default(autoincrement())
+  action      String
+  description String
+  task        Task      @relation("TaskLogs", fields: [taskId], references: [id]) // relasi named
+  taskId      Int
+  user        User?     @relation("UserLogs", fields: [userId], references: [id]) // relasi named
+  userId      Int?
+  createdAt   DateTime  @default(now())
+}
+
 
 enum Status {
   NOT_STARTED
