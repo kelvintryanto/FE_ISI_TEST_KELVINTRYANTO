@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 // Validasi schema dengan role
 const registerSchema = z
@@ -75,7 +76,7 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-5 bg-zinc-900 text-white">
+    <div className="flex flex-col min-h-screen items-center justify-center p-5 bg-zinc-900 text-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="rounded-lg border border-zinc-700 bg-zinc-800 p-5 flex flex-col items-center justify-center w-full space-y-5 md:max-w-[450px]"
@@ -195,6 +196,15 @@ export default function Register() {
         >
           {loading ? "Loading..." : "Register"}
         </button>
+
+        <div className="flex justify-center items-center">
+          <p className="text-sm text-gray-400">
+            Already have an account?{" "}
+            <Link href="/" className="text-blue-500 underline">
+              Login
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );

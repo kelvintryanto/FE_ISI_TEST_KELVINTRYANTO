@@ -3,6 +3,10 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 // Skema validasi dengan Zod
 const loginSchema = z.object({
@@ -13,6 +17,9 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -21,7 +28,33 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormInputs) => {
+  const onSubmit = async (data: LoginFormInputs) => {
+    try {
+      setLoading(true);
+      // Mengirim data ke API backend
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log(response);
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success("Welcome!");
+        router.push("/task");
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
     console.log("Data login:", data);
   };
 
@@ -68,8 +101,17 @@ export default function LoginForm() {
             type="submit"
             className="w-full whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black hover:bg-gray-200 h-10 px-4 py-2"
           >
-            Login
+            {loading ? "Loading..." : "Login"}
           </button>
+
+          <div className="flex justify-center items-center">
+            <p className="text-sm text-gray-400">
+              {`Don't have an account?`}{" "}
+              <Link href="/register" className="text-blue-500 underline">
+                Register
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

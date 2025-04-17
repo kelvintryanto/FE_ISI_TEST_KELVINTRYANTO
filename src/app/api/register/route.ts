@@ -8,10 +8,8 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const data = await req.json(); // Ambil data dari request
+    const data = await req.json();
 
-    console.log(data);
-    // Cek apakah email sudah terdaftar di database
     const existingUser = await prisma.user.findUnique({
       where: {
         email: data.email,
@@ -27,7 +25,6 @@ export async function POST(req: Request) {
 
     const hashedPassword = await hashPass(data.password);
 
-    // Simpan user baru ke database
     await prisma.user.create({
       data: {
         name: data.name,
