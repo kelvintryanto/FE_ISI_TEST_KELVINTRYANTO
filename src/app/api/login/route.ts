@@ -8,17 +8,14 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("masuk sini nih");
     const body = await request.json();
     const { email, password } = body;
-    console.log(body);
 
     const user = await prisma.user.findUnique({
       where: {
         email,
       },
     });
-    console.log(user);
 
     if (!user) {
       return NextResponse.json(
