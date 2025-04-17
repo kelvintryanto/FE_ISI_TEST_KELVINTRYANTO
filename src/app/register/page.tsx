@@ -3,6 +3,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 // Validasi schema dengan role
 const registerSchema = z
@@ -25,6 +28,9 @@ const registerSchema = z
 type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function Register() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -42,6 +48,7 @@ export default function Register() {
 
   const onSubmit = async (data: RegisterForm) => {
     try {
+      setLoading(true);
       // Mengirim data ke API backend
       const response = await fetch("/api/register", {
         method: "POST",
@@ -54,13 +61,16 @@ export default function Register() {
       const result = await response.json();
 
       if (response.ok) {
-        console.log("Registrasi berhasil:", result.message);
-        // Lakukan aksi seperti redirect atau beri feedback
+        toast.success(result.message + " Please login");
+        router.push("/");
       } else {
-        console.error("Error registrasi:", result.message);
+        toast.error(result.message);
       }
     } catch (error) {
-      console.error("Terjadi kesalahan:", error);
+      console.log(error);
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,7 +193,7 @@ export default function Register() {
           type="submit"
           className="w-full bg-white text-black py-2 px-4 rounded-lg hover:bg-gray-300 transition"
         >
-          Register
+          {loading ? "Loading..." : "Register"}
         </button>
       </form>
     </div>

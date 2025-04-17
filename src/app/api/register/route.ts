@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { hashPass } from "@/app/utils/bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -19,26 +20,28 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: "Email sudah terdaftar!" },
+        { message: "Email already registered!" },
         { status: 400 }
       );
     }
 
+    const hashedPassword = await hashPass(data.password);
+
     // Simpan user baru ke database
     await prisma.user.create({
       data: {
-        name: data.email,
+        name: data.name,
         email: data.email,
         role: data.role,
-        password: data.password,
+        password: hashedPassword,
       },
     });
 
-    return NextResponse.json({ message: "User berhasil terdaftar!" });
+    return NextResponse.json({ message: "Successfully registered!" });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { message: "Terjadi kesalahan!" },
+      { message: "Error registering user!" },
       { status: 500 }
     );
   }
