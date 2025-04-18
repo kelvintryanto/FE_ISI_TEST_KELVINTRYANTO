@@ -1,22 +1,26 @@
-# Gunakan image resmi Node.js
-FROM node:18-slim
+# Gunakan image yang ringan dan aman
+FROM docker-language-server:slim
 
 # Set direktori kerja
 WORKDIR /app
 
-# Install dependensi sistem yang diperlukan Prisma
-RUN apt-get update -y && apt-get install -y openssl
+# Install openssl (dibutuhkan Prisma)
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Salin semua file ke dalam image
-COPY . .
+# Salin file dependensi terlebih dahulu (untuk caching)
+COPY package*.json ./
 
-# Install dependensi project
+# Install dependensi aplikasi
 RUN npm install
 
-# Generate Prisma client
+# Salin semua source code ke container
+COPY . .
+
+# Generate Prisma Client
 RUN npx prisma generate
 
-# Ekspos port aplikasi
+# Buka port aplikasi
 EXPOSE 3000
 
 # Jalankan aplikasi
