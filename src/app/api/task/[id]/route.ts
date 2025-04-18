@@ -1,4 +1,3 @@
-import { formatDate } from "@/app/utils/dateHelper";
 import { verify } from "@/app/utils/jwt";
 import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
@@ -6,10 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     // mengambil user yang melakukan delete
     const cookieStore = await cookies();
@@ -21,7 +21,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     // mengambil id task untuk dicatat
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
@@ -41,9 +41,7 @@ export async function DELETE(
     await prisma.taskLog.create({
       data: {
         action: "DELETE",
-        description: `Task with title ${task.title} deleted by ${
-          user.name
-        } on ${formatDate(task.createdAt)}`,
+        description: `Task with title ${task.title} deleted by ${user.name}}`,
         userId: user.id,
       },
     });
@@ -64,12 +62,9 @@ export async function DELETE(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    const { id } = await params;
     console.log(id);
 
     if (!id) {

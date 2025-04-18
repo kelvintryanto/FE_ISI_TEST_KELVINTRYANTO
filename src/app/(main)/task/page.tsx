@@ -16,8 +16,9 @@ const Task = () => {
       const response = await fetch("/api/task");
       if (response.ok) {
         const data = await response.json();
-        if (data.tasks) {
-          setTasks(data.tasks);
+        console.log(data);
+        if (data) {
+          setTasks(data);
         }
       } else {
         toast.error("Failed to fetch tasks");
@@ -73,7 +74,11 @@ const Task = () => {
         )}
       </div>
 
-      <TaskTable tasks={tasks} fetchTask={fetchTask} />
+      {tasks.length > 0 ? (
+        <TaskTable tasks={tasks} fetchTask={fetchTask} />
+      ) : (
+        <div className="flex w-full justify-center mt-5">Belum ada task</div>
+      )}
     </>
   );
 };
