@@ -1,20 +1,23 @@
-# Gunakan base image Bun
-FROM oven/bun:1
+# Gunakan image resmi Node.js
+FROM node:18-slim
 
-# Set working directory di dalam container
-WORKDIR /src
+# Set direktori kerja
+WORKDIR /app
 
-# Salin semua file dari direktori lokal ke dalam container
+# Install dependensi sistem yang diperlukan Prisma
+RUN apt-get update -y && apt-get install -y openssl
+
+# Salin semua file ke dalam image
 COPY . .
 
-# Install dependencies
-RUN bun install
+# Install dependensi project
+RUN npm install
 
-# Jalankan migrate Prisma (opsional, jika ingin otomatis saat build)
-# RUN bunx prisma migrate deploy
+# Generate Prisma client
+RUN npx prisma generate
 
-# Build aplikasi Next.js
-RUN bun run build
+# Ekspos port aplikasi
+EXPOSE 3000
 
-# Jalankan aplikasi Next.js
-CMD ["bun", "run", "start"]
+# Jalankan aplikasi
+CMD ["npm", "run", "start"]
