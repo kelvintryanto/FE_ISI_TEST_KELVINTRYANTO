@@ -1,4 +1,7 @@
+import { formatDate } from "@/app/utils/dateHelper";
+import { verify } from "@/app/utils/jwt";
 import { PrismaClient } from "@prisma/client";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
@@ -8,14 +11,41 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // mengambil user yang melakukan delete
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const user = await verify(token);
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // mengambil id task untuk dicatat
     const { id } = params;
 
     if (!id) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    await prisma.taskLog.deleteMany({
-      where: { taskId: id }, // pastikan untuk menyesuaikan dengan relasi yang tepat
+    // mengambil task yang akan di delete
+    const task = await prisma.task.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!task) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
+    await prisma.taskLog.create({
+      data: {
+        action: "DELETE",
+        description: `Task with title ${task.title} deleted by ${
+          user.name
+        } on ${formatDate(task.createdAt)}`,
+        userId: user.id,
+      },
     });
 
     await prisma.task.delete({
@@ -77,19 +107,50 @@ export async function GET(
 
 export async function PUT(req: NextRequest) {
   try {
+    // mengambil user yang melakukan update
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const user = await verify(token);
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     // Mengambil ID dan data yang dikirimkan oleh klien
-    const { id, status } = await req.json();
+    const { id, status, description } = await req.json();
 
     // Validasi status yang diterima
     const validStatuses = ["NOT_STARTED", "ON_PROGRESS", "DONE", "REJECT"];
-    if (!validStatuses.includes(status)) {
+    if (status && !validStatuses.includes(status)) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
     }
 
-    // Memperbarui task di database
+    // Memperbarui task di database, memperbarui status dan description jika diberikan
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: { status },
+      data: {
+        ...(status && { status }), // Update status jika ada
+        ...(description && { description }), // Update description jika ada
+      },
+    });
+
+    // Ambil task yang akan di update untuk logging
+    const task = await prisma.task.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!task) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
+    await prisma.taskLog.create({
+      data: {
+        action: "UPDATE",
+        description: `Task with title ${task.title} updated by ${user.name}`,
+        userId: user.id,
+      },
     });
 
     // Mengembalikan response setelah update berhasil

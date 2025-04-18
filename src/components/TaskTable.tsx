@@ -1,6 +1,4 @@
-"use client";
-
-import { Eye, Trash } from "lucide-react";
+import { Eye, Trash, Pen } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -16,7 +14,7 @@ export type TaskTableType = {
   id: string;
   title: string;
   description: string;
-  status: "NOT STARTED" | "ON PROGRESS" | "DONE" | "REJECT";
+  status: "NOT_STARTED" | "ON_PROGRESS" | "DONE" | "REJECT";
   assignedTo?: User;
 };
 
@@ -26,6 +24,54 @@ type TaskTableProps = {
 };
 
 const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<TaskTableType | null>(null);
+  const [updatedDescription, setUpdatedDescription] = useState("");
+  const [updatedStatus, setUpdatedStatus] = useState<
+    "NOT_STARTED" | "ON_PROGRESS" | "DONE" | "REJECT"
+  >("NOT_STARTED");
+
+  const openModal = (task: TaskTableType) => {
+    setSelectedTask(task);
+    setUpdatedDescription(task.description);
+    setUpdatedStatus(task.status);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSave = async () => {
+    if (!selectedTask) return;
+
+    try {
+      const response = await fetch(`/api/task/${selectedTask.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          id: selectedTask.id,
+          description: updatedDescription,
+          status: updatedStatus,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Task updated successfully");
+        fetchTask();
+      } else {
+        toast.error("Failed to update task");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error updating task");
+    } finally {
+      closeModal();
+    }
+  };
+
   const [sortKey, setSortKey] = useState<keyof TaskTableType | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
@@ -173,10 +219,11 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
               </td>
               <td className="px-6 py-4 border text-center text-sm font-medium">
                 <div className="flex items-center justify-center gap-2 flex-nowrap">
+                  {/* View Button */}
                   <div className="relative group">
                     <Link
                       href={`/task/${task.id}`}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="hover:cursor-pointer"
                     >
                       <Eye size={20} />
                     </Link>
@@ -185,11 +232,26 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
                     </span>
                   </div>
 
+                  {/* Edit Button */}
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => openModal(task)}
+                      className="hover:cursor-pointer"
+                    >
+                      <Pen size={20} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition transform bg-gray-700 text-white text-xs rounded py-1 px-2 z-10">
+                      Edit
+                    </span>
+                  </div>
+
+                  {/* Delete Button */}
                   <div className="relative group">
                     <button
                       type="button"
                       onClick={() => handleDelete(task.id)}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 hover:cursor-pointer"
+                      className="hover:cursor-pointer"
                     >
                       <Trash size={20} />
                     </button>
@@ -203,6 +265,59 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal for editing */}
+      {isModalOpen && selectedTask && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-zinc-800 text-white p-6 rounded-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Edit Task</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                value={updatedDescription}
+                onChange={(e) => setUpdatedDescription(e.target.value)}
+                rows={3}
+                className="w-full mt-2 p-2 bg-zinc-700 rounded border border-zinc-600"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Status</label>
+              <select
+                value={updatedStatus}
+                onChange={(e) =>
+                  setUpdatedStatus(
+                    e.target.value as
+                      | "NOT_STARTED"
+                      | "ON_PROGRESS"
+                      | "DONE"
+                      | "REJECT"
+                  )
+                }
+                className="w-full mt-2 p-2 bg-zinc-700 rounded border border-zinc-600"
+              >
+                <option value="NOT_STARTED">Not Started</option>
+                <option value="ON_PROGRESS">On Progress</option>
+                <option value="DONE">Done</option>
+                <option value="REJECT">Reject</option>
+              </select>
+            </div>
+            <div className="flex justify-between gap-2">
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 text-white py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="bg-blue-600 text-white py-2 px-4 rounded"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

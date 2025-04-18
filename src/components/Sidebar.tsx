@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { ListIcon, LogOutIcon, Users } from "lucide-react";
+import { ClockFading, ListIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const navItems = [
 ];
 
 const leadItems = [
-  { label: "My Team", href: "/team", icon: <Users size={20} /> },
+  { label: "Logs", href: "/log", icon: <ClockFading size={20} /> },
 ];
 
 const logoutItem = {

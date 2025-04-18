@@ -36,8 +36,8 @@ model TaskLog {
   id          String    @id @default(uuid())
   action      String
   description String
-  task        Task      @relation("TaskLogs", fields: [taskId], references: [id])
-  taskId      String
+  task        Task?     @relation("TaskLogs", fields: [taskId], references: [id], onDelete: SetNull)
+  taskId      String?
   user        User?     @relation("UserLogs", fields: [userId], references: [id])
   userId      String?
   createdAt   DateTime  @default(now())
