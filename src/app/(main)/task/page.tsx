@@ -1,6 +1,6 @@
 "use client";
 
-import TaskTable, { TaskTableType } from "@/components/TaskTable";
+import TaskTable, { TaskTableType } from "@/app/components/TaskTable";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

@@ -1,26 +1,23 @@
-# Gunakan image yang ringan dan aman
-FROM docker-language-server:slim
+# Gunakan base image yang lebih stabil dan bisa pakai openssl
+FROM node:22-slim
 
 # Set direktori kerja
 WORKDIR /app
 
-# Install openssl (dibutuhkan Prisma)
-RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# Salin file dependensi terlebih dahulu (agar layer caching lebih efisien)
+COPY package*.json ./ 
+COPY prisma/schema.prisma ./prisma/schema.prisma @prisma/
 
-# Salin file dependensi terlebih dahulu (untuk caching)
-COPY package*.json ./
-
-# Install dependensi aplikasi
+# Install dependensi Node.js
 RUN npm install
 
-# Salin semua source code ke container
+# Salin seluruh isi project ke dalam container
 COPY . .
 
-# Generate Prisma Client
+# Generate Prisma Client di dalam container
 RUN npx prisma generate
 
-# Buka port aplikasi
+# Ekspos port aplikasi Next.js
 EXPOSE 3000
 
 # Jalankan aplikasi

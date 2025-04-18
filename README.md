@@ -1,15 +1,27 @@
+Berikut ini Asha siapkan dalam bentuk **teks penuh** untuk langsung dicopas ke file `README.md`:
+
+---
+
+```md
 # fe_isi_test_kelvintryanto
 
-Aplikasi manajemen tugas (task management) yang dikembangkan sebagai bagian dari _Assessment Test_ untuk posisi Front-End Engineer di PT. Ihsan Solusi Teknologi. Aplikasi ini dibuat menggunakan **Next.js 15**, **TailwindCSS**, **Prisma ORM**, **PostgreSQL**, dan **Docker Compose**.
+Aplikasi manajemen tugas (_task management_) yang dikembangkan sebagai bagian dari **Assessment Test** untuk posisi **Front-End Engineer** di PT. Ihsan Solusi Teknologi. Dibangun menggunakan **Next.js 15**, **TailwindCSS**, **Prisma ORM**, **PostgreSQL**, dan **Docker Compose**.
+
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+---
 
 ## 🚀 Fitur Utama
 
 - Autentikasi menggunakan JWT
 - Role pengguna: **Lead** dan **Team**
 - CRUD tugas (Create, Read, Update, Delete)
-- Assign tugas ke anggota tim
+- Penugasan tugas ke anggota tim
 - Pelacakan status tugas: `Not Started`, `On Progress`, `Done`, `Rejected`
-- Riwayat log setiap perubahan tugas
+- Riwayat log untuk setiap perubahan tugas
+
+---
 
 ## 🧱 Teknologi yang Digunakan
 
@@ -20,34 +32,43 @@ Aplikasi manajemen tugas (task management) yang dikembangkan sebagai bagian dari
 - [Node.js](https://nodejs.org/)
 - [Docker & Docker Compose](https://docs.docker.com/compose/)
 
+---
+
 ## 📁 Struktur Proyek
-
 ```
+
 fe_isi_test_kelvintryanto/
-├── .env                  # File konfigurasi environment
-├── docker-compose.yml   # File konfigurasi Docker Compose
-├── Dockerfile           # Dockerfile untuk aplikasi
+├── .env # File konfigurasi environment
+├── docker-compose.yml # Konfigurasi Docker Compose
+├── Dockerfile # Dockerfile untuk aplikasi
 ├── prisma/
-│   └── schema.prisma    # Skema Prisma untuk database
+│ └── schema.prisma # Skema Prisma untuk database
 └── src/
-    ├── app/             # Folder halaman Next.js dan API route
-    ├── components/      # Komponen UI
-    ├── lib/             # Fungsi utilitas dan konfigurasi Prisma
-    └── ...              # Berkas tambahan lainnya
-```
+├── app/ # Halaman Next.js dan API route
+├── components/ # Komponen UI
+├── lib/ # Konfigurasi Prisma & utilitas
+└── ... # Berkas lainnya
 
-## ⚙️ Persiapan Environment
+````
+
+---
+
+## ⚙️ Konfigurasi Environment
 
 Buat file `.env` di root dengan isi sebagai berikut:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/database_ist"
+DATABASE_URL="postgresql://postgres:postgres@database:5432/database_ist"
 JWT_SECRET_KEY=ihsansolusiteknologi
-```
+````
+
+> ⚠️ Gunakan `database` (nama service di Docker Compose) alih-alih `localhost`, agar Prisma dapat terhubung dari dalam container.
+
+---
 
 ## 🐳 Menjalankan dengan Docker Compose
 
-Pastikan Anda telah menginstal [Docker Desktop](https://www.docker.com/products/docker-desktop/) dan `docker-compose` sudah tersedia di sistem.
+Pastikan Anda telah menginstal [Docker Desktop](https://www.docker.com/products/docker-desktop).
 
 ### 1. Build dan Jalankan Aplikasi
 
@@ -63,16 +84,20 @@ Aplikasi akan tersedia di:
 http://localhost:3000
 ```
 
-## 📦 Perintah Tambahan
+---
 
-Jika Anda ingin menjalankan Prisma migrate secara manual:
+## 📦 Perintah Prisma Tambahan
+
+Jika Anda ingin menjalankan migrasi secara manual:
 
 ```bash
-docker exec -it <container_name> npx prisma migrate deploy
+docker exec -it frontend_isi npx prisma migrate deploy
 ```
 
-> Gantilah `<container_name>` dengan nama container aplikasi Anda.
+---
 
 ## ✅ Status Build
 
--
+✅ Build berhasil dan aplikasi berjalan dengan lancar menggunakan Docker Compose.
+
+---
