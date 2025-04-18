@@ -1,29 +1,50 @@
 "use client";
 
+import TaskTable, { TaskTableType } from "@/components/TaskTable";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Task = () => {
   const [lead, setLead] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [tasks, setTasks] = useState<TaskTableType[]>([]);
+
+  const fetchTask = async () => {
+    try {
+      const response = await fetch("/api/task");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.tasks) {
+          setTasks(data.tasks);
+        }
+      } else {
+        toast.error("Failed to fetch tasks");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchUserRole = async () => {
+    try {
+      const response = await fetch("/api/userRole");
+      const data = await response.json();
+      if (data.user) {
+        if (data.user.role === "lead") {
+          setLead(true);
+        } else {
+          setLead(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUserRole = async () => {
-      try {
-        const response = await fetch("/api/userRole");
-        const data = await response.json();
-        if (data.user) {
-          if (data.user.role === "lead") {
-            setLead(true);
-          } else {
-            setLead(false);
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    fetchTask();
     fetchUserRole();
   }, []);
 
@@ -51,6 +72,8 @@ const Task = () => {
           </button>
         )}
       </div>
+
+      <TaskTable tasks={tasks} fetchTask={fetchTask} />
     </>
   );
 };

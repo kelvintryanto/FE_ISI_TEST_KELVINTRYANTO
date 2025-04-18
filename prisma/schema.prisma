@@ -13,21 +13,27 @@ model User {
   email     String     @unique
   password  String
   role      Role       @default(team)
-  tasks     Task[]     @relation("UserTasks")
+  tasksTo   Task[]     @relation("UserTasks")         // Task yang user kerjakan
+  tasksFrom Task[]     @relation("AssignedFrom")      // Task yang user berikan
   logs      TaskLog[]  @relation("UserLogs")
   createdAt DateTime   @default(now())
 }
 
 model Task {
-  id           String     @id @default(uuid())
-  title        String
-  description  String?
-  status       Status     @default(NOT_STARTED)
-  assignedTo   User?      @relation("UserTasks", fields: [assignedToId], references: [id])
-  assignedToId String?
-  logs         TaskLog[]  @relation("TaskLogs")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id             String     @id @default(uuid())
+  title          String
+  description    String?
+  status         Status     @default(NOT_STARTED)
+
+  assignedTo     User?      @relation("UserTasks", fields: [assignedToId], references: [id])
+  assignedToId   String?
+
+  assignedFrom   User?      @relation("AssignedFrom", fields: [assignedFromId], references: [id])
+  assignedFromId String?
+
+  logs           TaskLog[]  @relation("TaskLogs")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 model TaskLog {
@@ -40,6 +46,7 @@ model TaskLog {
   userId      String?
   createdAt   DateTime  @default(now())
 }
+
 
 enum Status {
   NOT_STARTED

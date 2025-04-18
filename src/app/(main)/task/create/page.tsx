@@ -14,6 +14,7 @@ const TaskSchema = z.object({
     message: "Please select a status",
   }),
   assignedTo: z.string().min(1, "Please select an assigned user"),
+  assignedFrom: z.string(),
 });
 
 type TaskForm = z.infer<typeof TaskSchema>;
@@ -29,8 +30,20 @@ const CreateTask = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [team, setTeam] = useState<Team[]>([]);
+  const [whoAmI, setWhoAmI] = useState<string>("");
 
   useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await fetch("/api/userRole");
+        const data = await response.json();
+
+        setWhoAmI(data.user.id);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const fetchTeam = async () => {
       try {
         const team = await fetch("/api/team");
@@ -44,6 +57,8 @@ const CreateTask = () => {
         setLoading(false);
       }
     };
+
+    fetchUserRole();
     fetchTeam();
   }, []);
 
@@ -58,23 +73,28 @@ const CreateTask = () => {
       description: "",
       status: "NOT_STARTED",
       assignedTo: "",
+      assignedFrom: whoAmI,
     },
   });
 
   const onSubmit = async (data: TaskForm) => {
     try {
       setLoading(true);
+
+      const body = {
+        ...data,
+        assignedFrom: whoAmI,
+      };
       // Mengirim data ke API backend
       const response = await fetch("/api/task", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          data,
-        }),
+        body: JSON.stringify(body),
       });
 
+      console.log(data);
       const result = await response.json();
 
       if (response.ok) {
@@ -83,6 +103,8 @@ const CreateTask = () => {
       } else {
         toast.error(result.message);
       }
+
+      router.push("/task");
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong!");
@@ -130,6 +152,7 @@ const CreateTask = () => {
             <textarea
               id="description"
               placeholder="Enter your description"
+              {...register("description")}
               className="w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white text-white placeholder-gray-400"
             />
             {errors.description && (
@@ -153,8 +176,8 @@ const CreateTask = () => {
               className="w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-lg shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-white"
             >
               <option value="NOT_STARTED">Not Started ⛔ </option>
-              <option value="ON_PROGRESS">On Progress ❗</option>
-              <option value="DONE">Done ✔</option>
+              <option value="ON_PROGRESS">On Progress 🔛</option>
+              <option value="DONE">Done ✅</option>
               <option value="REJECT">Reject ❌</option>
             </select>
             {errors.status && (
