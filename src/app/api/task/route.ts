@@ -1,4 +1,3 @@
-import { formatDate } from "@/app/utils/dateHelper";
 import { verify } from "@/app/utils/jwt";
 import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
     await prisma.taskLog.create({
       data: {
         action: "CREATE",
-        description: `${data.title} created by ${user.name} to ${assignedUser.name}`,
+        description: `${data.title} created by ${user?.name} to ${assignedUser?.name}`,
         taskId: result.id,
         userId: data.assignedFrom,
       },
