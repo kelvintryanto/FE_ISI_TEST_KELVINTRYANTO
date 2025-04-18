@@ -23,7 +23,7 @@ type Team = {
   id: string;
   name: string;
   email: string;
-  role: "NOT STARTED" | "ON PROGRESS" | "DONE" | "REJECT";
+  role: "lead" | "team";
 };
 
 const CreateTask = () => {
@@ -85,6 +85,7 @@ const CreateTask = () => {
         ...data,
         assignedFrom: whoAmI,
       };
+
       // Mengirim data ke API backend
       const response = await fetch("/api/task", {
         method: "POST",

@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Pen, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -53,6 +53,26 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
       console.log(error);
     } finally {
       fetchTask();
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/task/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ id, status: newStatus }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        toast.success("Status updated successfully");
+        fetchTask(); // Refresh tasks
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -137,7 +157,16 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
                 {task.description}
               </td>
               <td className="px-6 py-4 border text-gray-500 dark:text-gray-400">
-                {task.status}
+                <select
+                  value={task.status}
+                  onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                  className="border rounded px-3 py-1 bg-zinc-700 text-white"
+                >
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="ON_PROGRESS">On Progress</option>
+                  <option value="DONE">Done</option>
+                  <option value="REJECT">Reject</option>
+                </select>
               </td>
               <td className="px-6 py-4 border text-gray-500 dark:text-gray-400">
                 {task.assignedTo ? task.assignedTo.name : "Not Assigned"}
@@ -153,18 +182,6 @@ const TaskTable = ({ tasks, fetchTask }: TaskTableProps) => {
                     </Link>
                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition transform bg-gray-700 text-white text-xs rounded py-1 px-2 z-10">
                       View
-                    </span>
-                  </div>
-
-                  <div className="relative group">
-                    <Link
-                      href={`/task/${task.id}`}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      <Pen size={20} />
-                    </Link>
-                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition transform bg-gray-700 text-white text-xs rounded py-1 px-2 z-10">
-                      Edit
                     </span>
                   </div>
 

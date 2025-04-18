@@ -1,5 +1,5 @@
-const Log = () => {
-  return <div>Log</div>;
+const TaskLog = () => {
+  return <div>Task Log</div>;
 };
 
-export default Log;
+export default TaskLog;

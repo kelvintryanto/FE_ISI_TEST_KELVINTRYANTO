@@ -13,8 +13,7 @@ model User {
   email     String     @unique
   password  String
   role      Role       @default(team)
-  tasksTo   Task[]     @relation("UserTasks")         // Task yang user kerjakan
-  tasksFrom Task[]     @relation("AssignedFrom")      // Task yang user berikan
+  tasksTo   Task[]     @relation("UserTasks")
   logs      TaskLog[]  @relation("UserLogs")
   createdAt DateTime   @default(now())
 }
@@ -27,9 +26,6 @@ model Task {
 
   assignedTo     User?      @relation("UserTasks", fields: [assignedToId], references: [id])
   assignedToId   String?
-
-  assignedFrom   User?      @relation("AssignedFrom", fields: [assignedFromId], references: [id])
-  assignedFromId String?
 
   logs           TaskLog[]  @relation("TaskLogs")
   createdAt      DateTime   @default(now())

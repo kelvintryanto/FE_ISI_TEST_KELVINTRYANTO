@@ -33,13 +33,17 @@ export async function POST(req: NextRequest) {
         action: "create",
         description: `${data.title} created by ${user.name} to ${assignedUser.name}`,
         taskId: result.id,
-        userId: data.assignedFromId,
+        userId: data.assignedFrom,
       },
     });
 
     return NextResponse.json({ message: "Task created successfully!" });
   } catch (error) {
     console.log(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -47,7 +51,7 @@ export async function GET() {
   try {
     const tasks = await prisma.task.findMany({
       include: {
-        assignedTo: true, // ini penting untuk mendapatkan data assignedTo.name
+        assignedTo: true,
       },
     });
 

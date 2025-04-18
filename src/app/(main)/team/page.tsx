@@ -1,5 +1,5 @@
 const Team = () => {
-  return <div>Team</div>;
+  return <div>Soon will be here</div>;
 };
 
 export default Team;
