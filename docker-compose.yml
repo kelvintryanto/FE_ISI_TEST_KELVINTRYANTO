@@ -21,7 +21,7 @@ services:
       - .env
     depends_on:
       - database
-    command: npm run dev # ganti dengan npm run dev atau next dev
+    command: ./entrypoint.sh
 
 volumes:
   pgdata:

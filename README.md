@@ -1,8 +1,3 @@
-Berikut ini Asha siapkan dalam bentuk **teks penuh** untuk langsung dicopas ke file `README.md`:
-
----
-
-```md
 # fe_isi_test_kelvintryanto
 
 Aplikasi manajemen tugas (_task management_) yang dikembangkan sebagai bagian dari **Assessment Test** untuk posisi **Front-End Engineer** di PT. Ihsan Solusi Teknologi. Dibangun menggunakan **Next.js 15**, **TailwindCSS**, **Prisma ORM**, **PostgreSQL**, dan **Docker Compose**.
@@ -35,21 +30,20 @@ Aplikasi manajemen tugas (_task management_) yang dikembangkan sebagai bagian da
 ---
 
 ## 📁 Struktur Proyek
+
 ```
-
 fe_isi_test_kelvintryanto/
-├── .env # File konfigurasi environment
-├── docker-compose.yml # Konfigurasi Docker Compose
-├── Dockerfile # Dockerfile untuk aplikasi
+├── .env                     # File konfigurasi environment
+├── docker-compose.yml        # Konfigurasi Docker Compose
+├── Dockerfile                # Dockerfile untuk aplikasi
 ├── prisma/
-│ └── schema.prisma # Skema Prisma untuk database
+│   └── schema.prisma        # Skema Prisma untuk database
 └── src/
-├── app/ # Halaman Next.js dan API route
-├── components/ # Komponen UI
-├── lib/ # Konfigurasi Prisma & utilitas
-└── ... # Berkas lainnya
-
-````
+    ├── app/                 # Halaman Next.js dan API route
+    ├── components/          # Komponen UI
+    ├── lib/                 # Konfigurasi Prisma & utilitas
+    └── ...                  # Berkas lainnya
+```
 
 ---
 
@@ -60,9 +54,9 @@ Buat file `.env` di root dengan isi sebagai berikut:
 ```env
 DATABASE_URL="postgresql://postgres:postgres@database:5432/database_ist"
 JWT_SECRET_KEY=ihsansolusiinformatika
-````
+```
 
-> ⚠️ Gunakan `database` (nama service di Docker Compose) alih-alih `localhost`, agar Prisma dapat terhubung dari dalam container.
+> ⚠️ Pastikan Anda menggunakan `database` (nama service di Docker Compose) sebagai host, bukan `localhost`, agar Prisma dapat terhubung dari dalam container.
 
 ---
 
@@ -88,10 +82,25 @@ http://localhost:3000
 
 ## 📦 Perintah Prisma Tambahan
 
-Jika Anda ingin menjalankan migrasi secara manual:
+Jika Anda ingin menjalankan migrasi Prisma secara manual setelah build:
 
 ```bash
-docker exec -it frontend_isi npx prisma migrate deploy
+docker exec -it frontend_isi sh
+npx prisma migrate deploy
+```
+
+Atau jika Anda ingin melakukan pengambilan skema dari database (misalnya, saat pertama kali menggunakan Prisma):
+
+```bash
+docker exec -it frontend_isi sh
+npx prisma db pull
+```
+
+Jika ingin menghasilkan Prisma Client setelah migrasi atau perubahan skema:
+
+```bash
+docker exec -it frontend_isi sh
+npx prisma generate
 ```
 
 ---
