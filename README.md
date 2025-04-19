@@ -59,7 +59,7 @@ Buat file `.env` di root dengan isi sebagai berikut:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@database:5432/database_ist"
-JWT_SECRET_KEY=ihsansolusiteknologi
+JWT_SECRET_KEY=ihsansolusiinformatika
 ````
 
 > ⚠️ Gunakan `database` (nama service di Docker Compose) alih-alih `localhost`, agar Prisma dapat terhubung dari dalam container.
