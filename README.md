@@ -1,6 +1,6 @@
 # fe_isi_test_kelvintryanto
 
-Aplikasi manajemen tugas (_task management_) yang dikembangkan sebagai bagian dari **Assessment Test** untuk posisi **Front-End Engineer** di PT. Ihsan Solusi Teknologi. Dibangun menggunakan **Next.js 15**, **TailwindCSS**, **Prisma ORM**, **PostgreSQL**, dan **Docker Compose**.
+Aplikasi manajemen tugas (_task management_) yang dikembangkan sebagai bagian dari **Assessment Test** untuk posisi **Front-End Engineer** di PT. Ihsan Solusi Informatika. Dibangun menggunakan **Next.js 15**, **TailwindCSS**, **Prisma ORM**, **PostgreSQL**, dan **Docker Compose**.
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
