@@ -7,6 +7,10 @@ until nc -z database 5432; do
 done
 echo "Database is ready! ✅"
 
+if [ "$NODE_ENV" != "production" ]; then
+  npx prisma migrate reset --force
+fi
+
 # Jalankan migrate dev
 npx prisma migrate dev --name init
 

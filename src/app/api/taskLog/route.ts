@@ -5,7 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const logs = await prisma.taskLog.findMany();
+    const logs = await prisma.taskLog.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     return NextResponse.json(logs, { status: 200 });
   } catch (error) {
     console.log(error);
